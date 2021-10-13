@@ -25,9 +25,9 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
-    #  upload
-    - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v2.2.4
+#     #  upload
+#     - name: Upload a Build Artifact
+#       uses: actions/upload-artifact@v2.2.4
 
     # step： 获取apk版本号
     - name: APK Version
