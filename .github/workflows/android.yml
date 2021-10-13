@@ -25,15 +25,12 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
+    # 能生成可下载的apk文档 
     - name: Upload Apk
       uses: actions/upload-artifact@v1
       with: 
         name: DEBUG.apk
         path: app/build/outputs/apk/debug/app-debug.apk
-
-#     #  upload
-#     - name: Upload a Build Artifact
-#       uses: actions/upload-artifact@v2.2.4
 
     # step： 获取apk版本号
     - name: APK Version
