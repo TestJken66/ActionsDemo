@@ -39,7 +39,7 @@ jobs:
 #             app/build.gradle
     - uses: actions/upload-artifact@v2
       with:
-        name: my-artifact
+        name: multisource
         path: |
           app/build/outputs/apk/debug/app-debug.apk
           app/build.gradle
