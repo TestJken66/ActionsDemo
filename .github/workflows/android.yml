@@ -58,8 +58,8 @@ jobs:
       run: |
             updateLog=`git log --pretty=format:"%s" -1`
             echo "updateLog=$updateLog" >> $GITHUB_ENV
-  alint:
 
+  alint:
     runs-on: ubuntu-latest
 
     steps:
@@ -76,11 +76,18 @@ jobs:
     - name: Build with Gradle
       run: |
         ./gradlew lint
-        ls -R *>./tree.txt
+        ls -R *>./lint-tree.txt
 
 
-    - name: Upload tree
-      uses: actions/upload-artifact@v1
+#     - name: Upload tree
+#       uses: actions/upload-artifact@v1
+#       with:
+#        name: tree.txt
+#        path: ./tree.txt
+    - uses: actions/upload-artifact@v2
       with:
-       name: tree.txt
-       path: ./tree.txt
+        name: lint-result
+        path: |
+          ./lint-tree.txt
+          ./app/build/reports/*.html
+          ./app/build/reports/*.xml
