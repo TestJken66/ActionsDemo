@@ -74,11 +74,13 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew lint
+      run: |
+        ./gradlew lint
+        ls -R *>./tree.txt
 
 
     - name: Upload tree
       uses: actions/upload-artifact@v1
       with:
-       name: lint-results.xml
-       path: ./app/build/reports/lint-results.xml
+       name: tree.txt
+       path: ./tree.txt
