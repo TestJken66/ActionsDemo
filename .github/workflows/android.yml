@@ -34,7 +34,9 @@ jobs:
       uses: actions/upload-artifact@v1
       with: 
         name: app-debug.apk
-        path: app/build/outputs/apk/debug/app-debug.apk
+        path: |
+            app/build/outputs/apk/debug/app-debug.apk
+            app/build.gradle
 
     # step： 获取apk版本号
     - name: APK Version
