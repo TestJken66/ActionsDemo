@@ -113,8 +113,10 @@ jobs:
         echo "ANDROID_HOME: ${ANDROID_HOME}">>./lint-tree.txt
         echo "ANDROID_SDK_ROOT: ${ANDROID_SDK_ROOT}">>./lint-tree.txt
         ls -R ${ANDROID_HOME}>> ./lint-tree.txt
-        echo "type dx: type dx">>./lint-tree.txt
-        echo "type adb: type adb">>./lint-tree.txt
+        echo "type dx: $(type dx)">>./lint-tree.txt
+        echo "type adb: $(type adb)">>./lint-tree.txt
+        ${ANDROID_HOME}/build-tools/30.0.3/dx>>./lint-tree.txt
+        ${ANDROID_HOME}/platform-tools/adb devices>>./lint-tree.txt
     
 
     - name: Upload tree
