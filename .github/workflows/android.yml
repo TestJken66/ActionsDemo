@@ -11,6 +11,30 @@ on:
 #     - cron: '0 */5 * * *'
 
 jobs:
+  test-Install:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: "11"
+          distribution: "adopt"
+          cache: maven
+      - name: Installation depends
+        run: |
+          sudo apt-get update
+          sudo apt-get  install unzip
+      - name: Check env
+        run: |
+          type unzip>./tree.txt
+      - name: Upload tree
+        uses: actions/upload-artifact@v1
+        with:
+          name: tree.txt
+          path: ./tree.txt
+
   checkenv:
     runs-on: ubuntu-latest
 
