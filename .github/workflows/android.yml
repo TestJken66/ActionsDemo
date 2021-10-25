@@ -92,7 +92,7 @@ jobs:
 #           ./lint-tree.txt
 #           ./app/build/reports/*.html
 #           ./app/build/reports/*.xml
-  alint:
+  checkenv:
     runs-on: ubuntu-latest
 
     steps:
@@ -104,22 +104,27 @@ jobs:
         distribution: 'adopt'
         cache: gradle
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Build with Gradle
+    - name: Git all permission
+      run: |
+          chmod -R 777 *
+          git config core.filemode false
+
+    - name: Check Env
       continue-on-error: true
       run: |
-        echo "RESULT">./lint-tree.txt
+        echo "环境监测结果">./lint-tree.txt
         echo "ANDROID_HOME: ${ANDROID_HOME}">>./lint-tree.txt
         echo "ANDROID_SDK_ROOT: ${ANDROID_SDK_ROOT}">>./lint-tree.txt
-        #ls -R ${ANDROID_HOME}>> ./lint-tree.txt
-        # export PATH
+        echo "build-tools环境监测">>./lint-tree.txt
+        ls ${ANDROID_HOME}/build-tools>>./lint-tree.txt
+        
+        ### export PATH
         export PATH=$PATH:${ANDROID_HOME}/emulator:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/build-tools/30.0.3:${ANDROID_HOME}/build-tools/30.0.3/lld-bin:${ANDROID_HOME}/ndk/23.0.7599858
-        # shell
-        echo "adb环境变量测试数据">>./lint-tree.txt
-        adb --help>>./lint-tree.txt
-        echo "dx环境变量测试数据">>./lint-tree.txt
-        dx --help>>./lint-tree.txt
+        ### shell
+        #echo "adb环境变量测试数据">>./lint-tree.txt
+        #adb --help>>./lint-tree.txt
+        # echo "dx环境变量测试数据">>./lint-tree.txt
+        # dx --help>>./lint-tree.txt
         echo "NDK环境监测">>./lint-tree.txt
         ls ${ANDROID_HOME}/ndk>>./lint-tree.txt
   
