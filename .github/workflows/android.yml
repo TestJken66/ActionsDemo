@@ -80,12 +80,9 @@ jobs:
           chmod -R 777 *
           git config core.filemode false
 
-    - name: Build
-      run: |
-          ./gradlew build
-          echo "::set-output name=debugName::`ls app/build/outputs/apk/debug/*.apk | awk -F '(/|.apk)' '{print $6}'`"
-          echo "::set-output name=releaseName::`ls app/build/outputs/apk/release/*.apk | awk -F '(/|.apk)' '{print $6}'`"
-
+    # - name: Build
+    #   run: |
+    #       ./gradlew build
 #     # 能生成可下载的apk文档 
 #     - name: Upload Apk
 #       uses: actions/upload-artifact@v1
@@ -100,29 +97,29 @@ jobs:
 #         path: |
 #           app/build/outputs/apk/debug/app-debug.apk
 #           app/build.gradle
-#     - name: Gradle prebuild
-#       run: ./gradlew prebuild
-#     - name: Build release
-#       id: buildRelease
-#       run: |
-#         ./gradlew :app:assembleRelease
-#         echo "::set-output name=releaseName::`ls app/build/outputs/apk/release/*.apk | awk -F '(/|.apk)' '{print $6}'`"
-#     - name: Build debug
-#       id: buildDebug
-#       run: |
-#         ./gradlew :app:assembleDebug
-#         echo "::set-output name=debugName::`ls app/build/outputs/apk/debug/*.apk | awk -F '(/|.apk)' '{print $6}'`"
+    - name: Gradle prebuild
+      run: ./gradlew prebuild
+    - name: Build release
+      id: buildRelease
+      run: |
+        ./gradlew :app:assembleRelease
+        echo "::set-output name=releaseName::`ls app/build/outputs/apk/release/*.apk | awk -F '(/|.apk)' '{print $6}'`"
+    - name: Build debug
+      id: buildDebug
+      run: |
+        ./gradlew :app:assembleDebug
+        echo "::set-output name=debugName::`ls app/build/outputs/apk/debug/*.apk | awk -F '(/|.apk)' '{print $6}'`"
     - name: Upload release
       if: success()
       uses: actions/upload-artifact@v2
       with:
-        name: ${{ steps.Build.outputs.releaseName }}
+        name: ${{ steps.buildRelease.outputs.releaseName }}
         path: "app/build/outputs/apk/release/*.apk"
     - name: Upload debug
       if: success()
       uses: actions/upload-artifact@v2
       with:
-        name: ${{ steps.Build.outputs.debugName }}
+        name: ${{ steps.buildDebug.outputs.debugName }}
         path: "app/build/outputs/apk/debug/*.apk"
 
     # # step： 获取apk版本号
