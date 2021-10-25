@@ -11,10 +11,9 @@ on:
 #     - cron: '0 */5 * * *'
 
 jobs:
-#   build:
-#
+#   checkenv:
 #     runs-on: ubuntu-latest
-#
+
 #     steps:
 #     - uses: actions/checkout@v2
 #     - name: set up JDK 11
@@ -23,44 +22,126 @@ jobs:
 #         java-version: '11'
 #         distribution: 'adopt'
 #         cache: gradle
-#
-#     - name: Grant execute permission for gradlew
-#       run: chmod +x gradlew
-#     - name: Build with Gradle
-#       run: ./gradlew build
-#
-# #     # 能生成可下载的apk文档 
-# #     - name: Upload Apk
-# #       uses: actions/upload-artifact@v1
-# #       with: 
-# #         name: app-debug.apk
-# #         path: |
-# #             app/build/outputs/apk/debug/app-debug.apk
-# #             app/build.gradle
+
+#     - name: Git all permission
+#       run: |
+#           chmod -R 777 *
+#           git config core.filemode false
+
+#     - name: export Env
+#       continue-on-error: true
+#       run: |
+#         #echo "环境监测结果">./lint-tree.txt
+#         #echo "ANDROID_HOME: ${ANDROID_HOME}">>./lint-tree.txt
+#         #echo "ANDROID_SDK_ROOT: ${ANDROID_SDK_ROOT}">>./lint-tree.txt
+#         #echo "build-tools环境监测">>./lint-tree.txt
+#         #ls ${ANDROID_HOME}/build-tools>>./lint-tree.txt
+#         ### export PATH
+#         export PATH=$PATH:${ANDROID_HOME}/emulator:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/build-tools/30.0.3:${ANDROID_HOME}/build-tools/30.0.3/lld-bin:${ANDROID_HOME}/ndk/23.0.7599858
+#         ### shell
+#         #echo "adb环境变量测试数据">>./lint-tree.txt
+#         #adb --help>>./lint-tree.txt
+#         #echo "dx环境变量测试数据">>./lint-tree.txt
+#         #type dx>>./lint-tree.txt
+#         #echo "NDK环境监测">>./lint-tree.txt
+#         #ls ${ANDROID_HOME}/ndk>>./lint-tree.txt
+  
+#     - name: Install NDK
+#       run: |
+#             ${ANDROID_HOME}/tools/bin/sdkmanager --list --channel=1
+#             echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk;16.1.4479499" --sdk_root=${ANDROID_SDK_ROOT} --channel=1
+
+# #     - name: cat install Result
+# #       continue-on-error: true
+# #       run: |
+# #         echo "NDK修改后环境监测">>./lint-tree.txt
+# #         ls ${ANDROID_HOME}/ndk>>./lint-tree.txt
+        
+#     - name: Upload tree
+#       uses: actions/upload-artifact@v1
+#       with:
+#        name: lint-tree.txt
+#        path: ./lint-tree.txt
+
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+        cache: gradle
+
+    - name: Give permission
+      run: |
+          chmod -R 777 *
+          git config core.filemode false
+
+    - name: Build
+      run: |
+          ./gradlew build
+          echo "::set-output name=debugName::`ls app/build/outputs/apk/debug/*.apk | awk -F '(/|.apk)' '{print $6}'`"
+          echo "::set-output name=releaseName::`ls app/build/outputs/apk/release/*.apk | awk -F '(/|.apk)' '{print $6}'`"
+
+#     # 能生成可下载的apk文档 
+#     - name: Upload Apk
+#       uses: actions/upload-artifact@v1
+#       with: 
+#         name: app-debug.apk
+#         path: |
+#             app/build/outputs/apk/debug/app-debug.apk
+#             app/build.gradle
 #     - uses: actions/upload-artifact@v2
 #       with:
 #         name: multisource
 #         path: |
 #           app/build/outputs/apk/debug/app-debug.apk
 #           app/build.gradle
-#      
-#     # step： 获取apk版本号
-#     - name: APK Version
-#       id: apk_version
+#     - name: Gradle prebuild
+#       run: ./gradlew prebuild
+#     - name: Build release
+#       id: buildRelease
 #       run: |
-#             versionCode=`grep "versionCode" app/build.gradle | awk -F " " '{print $2}'`
-#             versionName=`grep "versionName" app/build.gradle | awk -F ''\"'' '{print $2}'`
-#             echo "versionResult=$versionName.$versionCode"  >> $GITHUB_ENV
-#    
-#     # 获取git log
-#     - name: Get git log
-#       id: git_log
+#         ./gradlew :app:assembleRelease
+#         echo "::set-output name=releaseName::`ls app/build/outputs/apk/release/*.apk | awk -F '(/|.apk)' '{print $6}'`"
+#     - name: Build debug
+#       id: buildDebug
 #       run: |
-#             updateLog=`git log --pretty=format:"%s" -1`
-#             echo "updateLog=$updateLog" >> $GITHUB_ENV
+#         ./gradlew :app:assembleDebug
+#         echo "::set-output name=debugName::`ls app/build/outputs/apk/debug/*.apk | awk -F '(/|.apk)' '{print $6}'`"
+    - name: Upload release
+      if: success()
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ steps.Build.outputs.releaseName }}
+        path: "app/build/outputs/apk/release/*.apk"
+    - name: Upload debug
+      if: success()
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ steps.Build.outputs.debugName }}
+        path: "app/build/outputs/apk/debug/*.apk"
+
+    # # step： 获取apk版本号
+    # - name: APK Version
+    #   id: apk_version
+    #   run: |
+    #         versionCode=`grep "versionCode" app/build.gradle | awk -F " " '{print $2}'`
+    #         versionName=`grep "versionName" app/build.gradle | awk -F ''\"'' '{print $2}'`
+    #         echo "versionResult=$versionName.$versionCode"  >> $GITHUB_ENV
+   
+    # # 获取git log
+    # - name: Get git log
+    #   id: git_log
+    #   run: |
+    #         updateLog=`git log --pretty=format:"%s" -1`
+    #         echo "updateLog=$updateLog" >> $GITHUB_ENV
 #   alint:
 #     runs-on: ubuntu-latest
-#
+
 #     steps:
 #     - uses: actions/checkout@v2
 #     - name: set up JDK 11
@@ -69,7 +150,7 @@ jobs:
 #         java-version: '11'
 #         distribution: 'adopt'
 #         cache: gradle
-#
+
 #     - name: Grant execute permission for gradlew
 #       run: chmod +x gradlew
 #     - name: Build with Gradle
@@ -80,11 +161,11 @@ jobs:
 #         echo "ANDROID_HOME: ${ANDROID_HOME}">>./lint-tree.txt
 #         echo "ANDROID_SDK_ROOT: ${ANDROID_SDK_ROOT}">>./lint-tree.txt
 #         ls -R ${ANDROID_HOME}>> ./lint-tree.txt
-##     - name: Upload tree
-##       uses: actions/upload-artifact@v1
-##       with:
-##        name: tree.txt
-##        path: ./tree.txt
+# #     - name: Upload tree
+# #       uses: actions/upload-artifact@v1
+# #       with:
+# #        name: tree.txt
+# #        path: ./tree.txt
 #     - uses: actions/upload-artifact@v2
 #       with:
 #         name: lint-result
@@ -92,59 +173,3 @@ jobs:
 #           ./lint-tree.txt
 #           ./app/build/reports/*.html
 #           ./app/build/reports/*.xml
-  checkenv:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: set up JDK 11
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
-        distribution: 'adopt'
-        cache: gradle
-
-    - name: Git all permission
-      run: |
-          chmod -R 777 *
-          git config core.filemode false
-
-    - name: Check Env
-      continue-on-error: true
-      run: |
-        echo "环境监测结果">./lint-tree.txt
-        echo "ANDROID_HOME: ${ANDROID_HOME}">>./lint-tree.txt
-        echo "ANDROID_SDK_ROOT: ${ANDROID_SDK_ROOT}">>./lint-tree.txt
-        echo "build-tools环境监测">>./lint-tree.txt
-        ls ${ANDROID_HOME}/build-tools>>./lint-tree.txt
-        
-        ### export PATH
-        export PATH=$PATH:${ANDROID_HOME}/emulator:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/build-tools/30.0.3:${ANDROID_HOME}/build-tools/30.0.3/lld-bin:${ANDROID_HOME}/ndk/23.0.7599858
-        ### shell
-        #echo "adb环境变量测试数据">>./lint-tree.txt
-        #adb --help>>./lint-tree.txt
-        echo "dx环境变量测试数据">>./lint-tree.txt
-        type dx>>./lint-tree.txt
-        echo "NDK环境监测">>./lint-tree.txt
-        ls ${ANDROID_HOME}/ndk>>./lint-tree.txt
-  
-    - name: Install NDK
-      run: |
-            ${ANDROID_HOME}/tools/bin/sdkmanager --list --channel=1
-            echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk;16.1.4479499" --sdk_root=${ANDROID_SDK_ROOT} --channel=1
-
-    - name: test
-      continue-on-error: true
-      run: |
-        echo "NDK修改后环境监测">>./lint-tree.txt
-        ls ${ANDROID_HOME}/ndk>>./lint-tree.txt
-        
-    - name: Upload tree
-      uses: actions/upload-artifact@v1
-      with:
-       name: lint-tree.txt
-       path: ./lint-tree.txt
-
-
-
-
