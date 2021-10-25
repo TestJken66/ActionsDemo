@@ -31,20 +31,20 @@ jobs:
     - name: export Env
       continue-on-error: true
       run: |
-        #echo "环境监测结果">./checkenv.txt
-        #echo "ANDROID_HOME: ${ANDROID_HOME}">>./checkenv.txt
-        #echo "ANDROID_SDK_ROOT: ${ANDROID_SDK_ROOT}">>./checkenv.txt
-        #echo "build-tools环境监测">>./checkenv.txt
+        echo "环境监测结果">./checkenv.txt
+        echo "ANDROID_HOME: ${ANDROID_HOME}">>./checkenv.txt
+        echo "ANDROID_SDK_ROOT: ${ANDROID_SDK_ROOT}">>./checkenv.txt
+        echo "build-tools环境监测">>./checkenv.txt
         #ls ${ANDROID_HOME}/build-tools>>./checkenv.txt
         ### export PATH
         export PATH=$PATH:${ANDROID_HOME}/emulator:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/build-tools/30.0.3:${ANDROID_HOME}/build-tools/30.0.3/lld-bin:${ANDROID_HOME}/ndk/23.0.7599858
         ### shell
-        #echo "adb环境变量测试数据">>./lcheckenv.txt
-        #adb --help>>./checkenv.txt
-        #echo "dx环境变量测试数据">>./checkenv.txt
-        #type dx>>./checkenv.txt
-        #echo "NDK环境监测">>./checkenv.txt
-        #ls ${ANDROID_HOME}/ndk>>./checkenv.txt
+        echo "adb环境变量测试数据">>./checkenv.txt
+        adb --help>>./checkenv.txt
+        echo "dx环境变量测试数据">>./checkenv.txt
+        type dx>>./checkenv.txt
+        echo "NDK环境监测">>./checkenv.txt
+        ls ${ANDROID_HOME}/ndk>>./checkenv.txt
 
     # # install ndk example
     # - name: Install NDK
