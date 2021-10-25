@@ -112,13 +112,28 @@ jobs:
         echo "RESULT">./lint-tree.txt
         echo "ANDROID_HOME: ${ANDROID_HOME}">>./lint-tree.txt
         echo "ANDROID_SDK_ROOT: ${ANDROID_SDK_ROOT}">>./lint-tree.txt
-        ls -R ${ANDROID_HOME}>> ./lint-tree.txt
-        echo "type dx: $(type dx)">>./lint-tree.txt
-        echo "type adb: $(type adb)">>./lint-tree.txt
-        # ${ANDROID_HOME}/build-tools/30.0.3/dx>>./lint-tree.txt
-        ${ANDROID_HOME}/platform-tools/adb devices>>./lint-tree.txt
-    
+        #ls -R ${ANDROID_HOME}>> ./lint-tree.txt
+        # export PATH
+        export PATH=$PATH:${ANDROID_HOME}/emulator:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/build-tools/30.0.3:${ANDROID_HOME}/build-tools/30.0.3/lld-bin:${ANDROID_HOME}/ndk/23.0.7599858
+        # shell
+        echo "adb环境变量测试数据">>./lint-tree.txt
+        adb --help>>./lint-tree.txt
+        echo "dx环境变量测试数据">>./lint-tree.txt
+        dx --help>>./lint-tree.txt
+        echo "NDK环境监测">>./lint-tree.txt
+        ls ${ANDROID_HOME}/ndk>>./lint-tree.txt
+  
+    - name: Install NDK
+      run: |
+            ${ANDROID_HOME}/tools/bin/sdkmanager --list --channel=1
+            echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk;16.1.4479499" --sdk_root=${ANDROID_SDK_ROOT} --channel=1
 
+    - name: test
+      continue-on-error: true
+      run: |
+        echo "NDK修改后环境监测">>./lint-tree.txt
+        ls ${ANDROID_HOME}/ndk>>./lint-tree.txt
+        
     - name: Upload tree
       uses: actions/upload-artifact@v1
       with:
