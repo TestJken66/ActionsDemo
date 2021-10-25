@@ -123,8 +123,8 @@ jobs:
         ### shell
         #echo "adb环境变量测试数据">>./lint-tree.txt
         #adb --help>>./lint-tree.txt
-        # echo "dx环境变量测试数据">>./lint-tree.txt
-        # dx --help>>./lint-tree.txt
+        echo "dx环境变量测试数据">>./lint-tree.txt
+        type dx>>./lint-tree.txt
         echo "NDK环境监测">>./lint-tree.txt
         ls ${ANDROID_HOME}/ndk>>./lint-tree.txt
   
