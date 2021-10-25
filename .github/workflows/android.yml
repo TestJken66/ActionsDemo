@@ -77,6 +77,8 @@ jobs:
       run: |
         ./gradlew lint
         ls -R *>./lint-tree.txt
+        echo "ANDROID_HOME: ${ANDROID_HOME}">>./lint-tree.txt
+        echo "ANDROID_SDK_ROOT: ${ANDROID_SDK_ROOT}">>./lint-tree.txt
 
 
 #     - name: Upload tree
