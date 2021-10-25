@@ -11,29 +11,6 @@ on:
 #     - cron: '0 */5 * * *'
 
 jobs:
-  test-Install:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 11x
-        uses: actions/setup-java@v2
-        with:
-          java-version: "11"
-          distribution: "adopt"
-          cache: maven
-      - name: Installation depends
-        run: |
-          sudo apt-get update
-          sudo apt-get  install unzip
-      - name: Checkc env
-        run: |
-          type unzip>./treex.txt
-      - name: Uploadc tree
-        uses: actions/upload-artifact@v1
-        with:
-          name: treex.txt
-          path: ./treex.txt
 
   checkenv:
     runs-on: ubuntu-latest
